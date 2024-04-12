@@ -6,6 +6,7 @@
 typedef struct{
     unsigned int *previous_connections;
     unsigned int last_planet;
+    double previous_distance_from_mixer; // needed so i can compare if i am heading in the right direction
 
 } travel_info;
 
@@ -26,19 +27,26 @@ ShipAction space_hop(unsigned int crt_planet,
     printf("You are currently on planet %u.\n", crt_planet);
     printf("There are currently %d planets you can reach from here.\n", num_connections);
 
-    travel_info myguy;
+    travel_info *myguy;
+    if (ship_state == NULL) {
+        myguy = malloc(sizeof(travel_info));
+        myguy->last_planet = 0;
+    }else{
+            myguy = ship_state;
+            printf("My Last Planet's ID was %u\n", myguy->last_planet);
+        }
 
     // dynamically allocates memory and copies connections into previous connections
-    myguy.previous_connections = malloc(sizeof(unsigned int)*num_connections);
+    myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections);
     for (int i = 0; i < num_connections; i++)
     {
-        myguy.previous_connections[i] = connections[i];
+        myguy->previous_connections[i] = connections[i];
     }
 
     // trying to ccopy crt_planet to last_planet
+    
+    myguy->last_planet = crt_planet;
 
-    myguy.last_planet = crt_planet;
-    printf("My Last Planet's ID was %u\n", myguy.last_planet);
     
 
     ShipAction bruh;
@@ -65,6 +73,8 @@ ShipAction space_hop(unsigned int crt_planet,
     } else {
         bruh.next_planet = connections[0];
     }
+
+    bruh.ship_state = myguy;
     return bruh;
 
 
