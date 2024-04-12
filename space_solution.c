@@ -7,7 +7,7 @@ typedef struct{
     unsigned int *previous_connections;
     unsigned int last_planet;
     double previous_distance_from_mixer; // needed so i can compare if i am heading in the right direction
-    int jumps;
+    int jumps; // made to see how many jumps were done without actually getting treasure planet
 
 } travel_info;
 
