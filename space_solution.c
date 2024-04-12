@@ -77,5 +77,7 @@ ShipAction space_hop(unsigned int crt_planet,
     bruh.ship_state = myguy;
     return bruh;
 
+    // make a switch for distance differences i.e if its bigger go back , if its smaller etc. + get rid of if statement for the switch :]
+
 
 } // ship state is my struct
