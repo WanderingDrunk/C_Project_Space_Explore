@@ -40,9 +40,6 @@ ShipAction space_hop(unsigned int crt_planet,
             printf("My Last Planet's ID was %u\n", myguy->last_planet);
         }
 
-    myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections); 
-    // temp might need to change where it is later
-    // assigns enough space every time for array
 
     // dynamically allocates memory and copies connections into previous connections
     myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections);
