@@ -42,32 +42,25 @@ ShipAction space_hop(unsigned int crt_planet,
 
     }else{
             last_space_hop = ship_state;
-            // if (last_space_hop->previous_num_connections !=  num_connections) { // if the size of connections is not the same i reallocate the memory
-            //   last_space_hop->previous_connections = realloc(last_space_hop->previous_connections, sizeof(unsigned int) * num_connections);
-            // }
+            if (last_space_hop->previous_num_connections !=  num_connections) { // if the size of connections is not the same i reallocate the memory
+              last_space_hop->previous_connections = realloc(last_space_hop->previous_connections, sizeof(unsigned int) * num_connections);
+            }
+            
             printf("My Last Planet's ID was %u\n", last_space_hop->last_planet);
         }
 
 
     // test to see if the previous connections were added
+    printf("Number of previous Connections %d\n", last_space_hop->previous_num_connections);
     
     if(last_space_hop->previous_num_connections != 0){
         for (int i = 0; i < last_space_hop->previous_num_connections; i++){
             
             printf("Previous Connection: %u\n", last_space_hop->previous_connections[i]);
-            last_space_hop->previous_connections[i] = connections[i];
+            
         }
     }
 
-
-    // for (int i = 0; i < num_connections; i++)
-    // {
-    //     last_space_hop->previous_connections[i] = connections[i];
-    //     printf("Previous Connection: %u\n", last_space_hop->previous_connections[i]);
-    // }
-
-
-    
 
     ShipAction current_space_hop;
     for (int i = 0; i < num_connections; i++)
@@ -102,9 +95,9 @@ ShipAction space_hop(unsigned int crt_planet,
     //     last_space_hop->jumped_connection++; // increase number to go to next conneciton instead
     // }
     
-    
-
-
+    for (int i = 0; i < num_connections; i++) {
+        last_space_hop->previous_connections[i] = connections[i];
+    }
     last_space_hop->last_planet = crt_planet; // moves current planet to last planet
     last_space_hop->previous_num_connections = num_connections; // Sets number of connections to the last connections
     last_space_hop->previous_distance_from_mixer = distance_from_mixer; // moves distnace form mixer to previous distnace from mixer
