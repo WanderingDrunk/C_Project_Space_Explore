@@ -5,9 +5,11 @@
 
 typedef struct{
     unsigned int *previous_connections;
-    unsigned int last_planet;
+    int previous_num_connections;
+    unsigned int last_planet; // last planet that was crt_planet
     double previous_distance_from_mixer; // needed so i can compare if i am heading in the right direction
     int jumps; // made to see how many jumps were done without actually getting treasure planet
+    int jumped_connection; // the number which of which connections was jumped to. i.e. connections[0]
 
 } travel_info;
 
@@ -15,12 +17,9 @@ ShipAction space_hop(unsigned int crt_planet,
                    unsigned int *connections, // array of planets connected so could use i.e. nextplanet = connections[0]
                    int num_connections,
                    double distance_from_mixer,
-                   void *ship_state) // can be anything i want it to be
+                   void *ship_state) // I set it to my travel_info struct
 {
     /* your solution here 
-    need  structure to store these variables:
-                                            planets jumped to
-                                            previous planet*/
     
     /*For backtracking need to have previous planet and an array of banned planets*/
 
@@ -32,11 +31,18 @@ ShipAction space_hop(unsigned int crt_planet,
     if (ship_state == NULL) {
         myguy = malloc(sizeof(travel_info));
         myguy->last_planet = 0;
-        int jumps = 0;
+        myguy->jumps = 0;
+        myguy->previous_distance_from_mixer = 0.0;
+        myguy->jumped_connection = 0;
+        myguy->previous_num_connections = 0;
     }else{
             myguy = ship_state;
             printf("My Last Planet's ID was %u\n", myguy->last_planet);
         }
+
+    myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections); 
+    // temp might need to change where it is later
+    // assigns enough space every time for array
 
     // dynamically allocates memory and copies connections into previous connections
     myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections);
@@ -65,6 +71,24 @@ ShipAction space_hop(unsigned int crt_planet,
 
 
     printf("Connection 0 is %u\n",connections[0]);
+    
+    for (int i = 0; i < num_connections; i++)
+    {
+        printf("Connection: %d\n", connections[i]);
+    }
+
+    for(int i = 0; i < num_connections; i++){
+        myguy->previous_connections[i] = connections[i];
+    }
+
+    // test to see if the previous connections were added
+    
+    if(myguy->previous_num_connections != 0){
+        for (int i = 0; i < myguy->previous_num_connections; i++)
+        {
+            printf("Previous Connection: %d\n", myguy->previous_connections[myguy->previous_num_connections]);
+        }
+    }
 
     
 
@@ -76,10 +100,31 @@ ShipAction space_hop(unsigned int crt_planet,
         myguy->jumps++;
     } else {
         bruh.next_planet = connections[0];
+        
     }
+
+
+    // if(distance_from_mixer > 2){
+    //     bruh.next_planet = RAND_PLANET;
+    //     printf("This is jump %d\n", myguy->jumps);
+    //     myguy->jumps++;
+    // }else if (distance_from_mixer < myguy->previous_distance_from_mixer){ // Checks if treasure is now closer 
+    //     bruh.next_planet = connections[myguy->jumped_connection];
+    // }else if (distance_from_mixer > myguy->previous_distance_from_mixer){ // Checks if treasure is now farther away
+    //     bruh.next_planet = myguy->last_planet; // If treasure is farther go back to previous planet
+    //     myguy->jumped_connection++; // increase number to go to next conneciton instead
+    // }
+    
+
+
+
+
+    myguy->previous_distance_from_mixer = distance_from_mixer;
 
     bruh.ship_state = myguy;
     return bruh;
+
+    
 
     // make if else statement since switch statements do not support greater than or less than
     /*      TYPES OF IF-ELSE'S I WILL NEED
