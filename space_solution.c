@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 typedef struct{
-    unsigned int *previous_connections;
-    int previous_num_connections;
+    unsigned int *previous_connections; // array of connections from last_planet
+    int previous_num_connections; // number of array connections form last_planet
     unsigned int last_planet; // last planet that was crt_planet
     double previous_distance_from_mixer; // needed so i can compare if i am heading in the right direction
     int jumps; // made to see how many jumps were done without actually getting treasure planet
@@ -27,99 +27,90 @@ ShipAction space_hop(unsigned int crt_planet,
     printf("You are currently on planet %u.\n", crt_planet);
     printf("There are currently %d planets you can reach from here.\n", num_connections);
 
-    travel_info *myguy;
+    travel_info *last_space_hop;
     if (ship_state == NULL) {
-        myguy = malloc(sizeof(travel_info));
-        myguy->last_planet = 0;
-        myguy->jumps = 0;
-        myguy->previous_distance_from_mixer = 0.0;
-        myguy->jumped_connection = 0;
-        myguy->previous_num_connections = 0;
+        last_space_hop = malloc(sizeof(travel_info));
+        last_space_hop->last_planet = 0;
+        last_space_hop->jumps = 0;
+        last_space_hop->previous_distance_from_mixer = 0.0;
+        last_space_hop->jumped_connection = 0;
+        last_space_hop->previous_num_connections = 0;
+
+
+        // dynamically allocates memory and copies connections into previous connections
+        last_space_hop->previous_connections = malloc(sizeof(unsigned int)*num_connections);
+
     }else{
-            myguy = ship_state;
-            printf("My Last Planet's ID was %u\n", myguy->last_planet);
+            last_space_hop = ship_state;
+            // if (last_space_hop->previous_num_connections !=  num_connections) { // if the size of connections is not the same i reallocate the memory
+            //   last_space_hop->previous_connections = realloc(last_space_hop->previous_connections, sizeof(unsigned int) * num_connections);
+            // }
+            printf("My Last Planet's ID was %u\n", last_space_hop->last_planet);
         }
 
 
-    // dynamically allocates memory and copies connections into previous connections
-    myguy->previous_connections = malloc(sizeof(unsigned int)*num_connections);
-    for (int i = 0; i < num_connections; i++)
-    {
-        myguy->previous_connections[i] = connections[i];
+    // test to see if the previous connections were added
+    
+    if(last_space_hop->previous_num_connections != 0){
+        for (int i = 0; i < last_space_hop->previous_num_connections; i++){
+            
+            printf("Previous Connection: %u\n", last_space_hop->previous_connections[i]);
+            last_space_hop->previous_connections[i] = connections[i];
+        }
     }
 
-    // trying to ccopy crt_planet to last_planet
-    
-    myguy->last_planet = crt_planet;
 
-    
-
-    ShipAction bruh;
-    for (int i = 0; i < num_connections; i++)
-    {
-        printf("Planet %d ID: %u\n", i+1, connections[i]); // Prints out the id of all the planets in jumpoing distance
-    }
-    
-    //      TEST TO SEE IF CONNECTIONS ARRAY WAS SUCCSEFULLY COPIED
     // for (int i = 0; i < num_connections; i++)
     // {
-    //     printf("Planet %d ID: %u\n", i+1, myguy.previous_connections[i]); // Prints out the id of all the planets in jumpoing distance
+    //     last_space_hop->previous_connections[i] = connections[i];
+    //     printf("Previous Connection: %u\n", last_space_hop->previous_connections[i]);
     // }
+
+
+    
+
+    ShipAction current_space_hop;
+    for (int i = 0; i < num_connections; i++)
+    {
+        printf("Planet %d ID: %u\n", i+1, connections[i]); // Prints out the id of all the planets in jumping distance
+    }
 
 
     printf("Connection 0 is %u\n",connections[0]);
     
-    for (int i = 0; i < num_connections; i++)
-    {
-        printf("Connection: %d\n", connections[i]);
-    }
-
-    for(int i = 0; i < num_connections; i++){
-        myguy->previous_connections[i] = connections[i];
-    }
-
-    // test to see if the previous connections were added
-    
-    if(myguy->previous_num_connections != 0){
-        for (int i = 0; i < myguy->previous_num_connections; i++)
-        {
-            printf("Previous Connection: %d\n", myguy->previous_connections[myguy->previous_num_connections]);
-        }
-    }
-
-    
-
 
     //          RANDOM HOP WORKING
-    if(distance_from_mixer > 2){
-        bruh.next_planet = RAND_PLANET;
-        printf("This is jump %d\n", myguy->jumps);
-        myguy->jumps++;
+    if(distance_from_mixer > 2){ // simple run of prog to see if it
+        current_space_hop.next_planet = RAND_PLANET;
+        printf("This is jump %d\n", last_space_hop->jumps);
+        last_space_hop->jumps++;
     } else {
-        bruh.next_planet = connections[0];
+        current_space_hop.next_planet = connections[0];
         
     }
 
+    //getchar();
 
     // if(distance_from_mixer > 2){
-    //     bruh.next_planet = RAND_PLANET;
-    //     printf("This is jump %d\n", myguy->jumps);
-    //     myguy->jumps++;
-    // }else if (distance_from_mixer < myguy->previous_distance_from_mixer){ // Checks if treasure is now closer 
-    //     bruh.next_planet = connections[myguy->jumped_connection];
-    // }else if (distance_from_mixer > myguy->previous_distance_from_mixer){ // Checks if treasure is now farther away
-    //     bruh.next_planet = myguy->last_planet; // If treasure is farther go back to previous planet
-    //     myguy->jumped_connection++; // increase number to go to next conneciton instead
+    //     current_space_hop.next_planet = RAND_PLANET;
+    //     printf("This is jump %d\n", last_space_hop->jumps);
+    //     last_space_hop->jumps++;
+    // }else if (distance_from_mixer < last_space_hop->previous_distance_from_mixer){ // Checks if treasure is now closer 
+    //     current_space_hop.next_planet = connections[last_space_hop->jumped_connection];
+    // }else if (distance_from_mixer > last_space_hop->previous_distance_from_mixer){ // Checks if treasure is now farther away
+    //     current_space_hop.next_planet = last_space_hop->last_planet; // If treasure is farther go back to previous planet
+    //     last_space_hop->jumped_connection++; // increase number to go to next conneciton instead
     // }
+    
     
 
 
+    last_space_hop->last_planet = crt_planet; // moves current planet to last planet
+    last_space_hop->previous_num_connections = num_connections; // Sets number of connections to the last connections
+    last_space_hop->previous_distance_from_mixer = distance_from_mixer; // moves distnace form mixer to previous distnace from mixer
 
-
-    myguy->previous_distance_from_mixer = distance_from_mixer;
-
-    bruh.ship_state = myguy;
-    return bruh;
+    current_space_hop.ship_state = last_space_hop;
+    return current_space_hop;
 
     
 
